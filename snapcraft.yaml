@@ -1,0 +1,40 @@
+name: terragrunt
+version: 0.1.1
+summary: build, change, and version infrastructure safely and efficiently
+description: |
+  Terragrunt is a thin wrapper for Terraform that provides extra tools 
+  for working with multiple Terraform modules, remote state, and locking.
+  This snap include terraform binary for dependencies.
+  (Upgrade terraform to 0.9.5)
+
+grade: stable
+confinement: strict
+
+apps:
+  terragrunt:
+    command: terragrunt
+    plugs: [home, network, network-bind]
+  terraform:
+    command: terraform
+    plugs: [home, network, network-bind]
+
+parts:
+  terragrunt:
+    source: https://github.com/gruntwork-io/terragrunt.git
+    source-tag: master
+    plugin: go
+    go-importpath: github.com/gruntwork-io/terragrunt
+    go-packages: [github.com/gruntwork-io/terragrunt]
+    go-buildtags: [dev]
+    after: [go]
+  terraform-stable:
+    source: https://github.com/hashicorp/terraform.git
+    #source-tag: v0.9.3
+    source-tag: v0.9.5
+    plugin: go
+    go-importpath: github.com/hashicorp/terraform
+    go-packages: [github.com/hashicorp/terraform]
+    go-buildtags: [dev]
+    after: [go]
+  go:
+    source-tag: go1.8.1
