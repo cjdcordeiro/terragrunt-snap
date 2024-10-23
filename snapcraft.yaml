@@ -1,5 +1,6 @@
 name: terragrunt
-version: git
+adopt-info: terragrunt
+base: core24
 summary: build, change, and version infrastructure safely and efficiently
 description: |
   Terragrunt is a thin wrapper for Terraform that provides extra tools 
@@ -7,34 +8,20 @@ description: |
   This snap include terraform binary for dependencies.
   (Upgrade terraform to 0.9.11)
 
-grade: stable
 confinement: strict
 
 apps:
   terragrunt:
-    command: terragrunt
-    plugs: [home, network, network-bind]
-  terraform:
-    command: terraform
+    command: bin/terragrunt
     plugs: [home, network, network-bind]
 
 parts:
   terragrunt:
     source: https://github.com/gruntwork-io/terragrunt.git
-    source-tag: master
+    source-tag: v0.68.4
     plugin: go
-    go-importpath: github.com/gruntwork-io/terragrunt
-    go-packages: [github.com/gruntwork-io/terragrunt]
-    go-buildtags: [dev]
-    after: [go]
-  terraform-stable:
-    source: https://github.com/hashicorp/terraform.git
-    #source-tag: v0.9.3
-    source-tag: v0.9.11
-    plugin: go
-    go-importpath: github.com/hashicorp/terraform
-    go-packages: [github.com/hashicorp/terraform]
-    go-buildtags: [dev]
-    after: [go]
-  go:
-    source-tag: go1.8.1
+    build-snaps:
+      - go/1.21/stable
+    override-stage: |
+      craftctl set version=$(${CRAFT_PART_INSTALL}/bin/terragrunt -v | awk -F ' ' '{print $3}')
+      craftctl default
